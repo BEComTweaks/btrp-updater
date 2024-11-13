@@ -1,0 +1,91 @@
+body {
+    display: flex;
+    font-family: Arial, sans-serif;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background-color: black;
+}
+
+h1 {
+    margin-top: 10px;
+}
+
+h1, h2, h3 {
+    color: white;
+    position: relative;
+}
+
+h1::after, h2::after, h3::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    border-bottom: rgba(222, 222, 222, 0.5) 2px solid;
+}
+
+[oreui-type="button"] {
+    cursor: pointer;
+    width: fit-content;
+}
+
+.bgwrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 20px;
+}
+
+.verhead {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+label[for="version"] {
+    margin-bottom: 2.5px;
+}
+
+.version {
+    margin-bottom: 20px;
+}
+
+.log {
+    width: max-content;
+    margin-top: -10px;
+    margin-bottom: 10px;
+    overflow-y: auto;
+    word-wrap: break-word;
+}
+
+.loghead {
+    margin-top: 5px;
+    margin-bottom: 15px;
+}
+
+sub {
+    margin-top: -20px;
+    margin-bottom: 0px;
+}
+
+@media (min-width: 600px) {
+    body {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .log {
+        max-height: 50vh;
+    }
+
+    .bgwrapper {
+        max-width: 40%;
+        max-height: 40%;
+        min-width: fit-content;
+    }
+}
