@@ -109,8 +109,8 @@ zipInput.addEventListener("change", function (event) {
                                         }
                                     })
                                     if (invalid) {
-                                        logger("This is probably caused by an internal")
-                                        logger("flattening, and will be ignored")
+                                        logger("Some packs have been removed because")
+                                        logger("DrAV doesnt want deprecaated features")
                                     }
                                 })
                             }

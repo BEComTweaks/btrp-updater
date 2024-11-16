@@ -68,11 +68,12 @@ label[for="version"] {
 }
 
 .log {
-  width: max-content;
+  width: fit-content;
   margin-top: -10px;
   margin-bottom: 10px;
   overflow-y: auto;
   word-wrap: break-word;
+  white-space: pre-wrap;
 }
 
 .loghead {
