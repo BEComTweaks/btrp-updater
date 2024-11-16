@@ -50,7 +50,7 @@ jobs:
         with:
           webhook: ${{ secrets.LOG_HOOK }}
           title: Page Deployed!
-          description: "Online at https://becomtweaks.github.io/BTRP-Updater/"
+          description: "Online at https://becomtweaks.github.io/btrp-updater/"
           avatar_url: "https://avatars.githubusercontent.com/u/176916861?v=4"
           username: "NSPBot911"
           nodetail: true
