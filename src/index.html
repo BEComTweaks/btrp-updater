@@ -8,28 +8,35 @@
     <title>Bedrock Tweaks Resource Pack Updater</title>
     <link href="https://becomtweaks.github.io/icon.png" rel="icon" type="image/x-icon">
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://nspc911.github.io/OreUI-HTML/src/oreui.css">
+    <link rel="stylesheet" href="https://nspc911.github.io/oreui-html/oreui.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+    <script src="https://nspc911.github.io/oreui-html/oreui.js"></script>
 </head>
 <body>
     <div class="bgwrapper" oreui-type="general" oreui-color="dark">
         <h1>Resource Pack Updater</h1>
         <sub>Update BedrockTweaks packs before it is official!</sub>
         <br>
-        <div class="fileInput" oreui-type="button" oreui-color="purple">
-            <input type="file" id="zipFileInput" accept=".mcpack" style="display: none;"/>
+        <div class="fileInput" oreui-type="button" oreui-color="purple" disabled=true>
+            <input type="file" id="zipFileInput" accept=".mcpack" style="display: none;" disabled/>
             <div for="zipFileInput">Select ZIP</div>
         </div>
-        <h3 class="verhead">Additional settings</h3>
-        <label for="version">Minimum Engine Version</label>
-        <select class="version" oreui-type="general" oreui-color="dark" disabled>
-            <option value="1.21.40">1.21.40</option>
-            <option value="1.21.0">1.21</option>
-            <option value="1.20.0">1.20</option>
-            <option value="1.19.0">1.19</option>
-            <option value="1.18.0">1.18</option>
-            <option value="1.17.0">1.17</option>
-            <option value="1.16.0">1.16</option>
-        </select>
+        <div class="more">
+            <h3>Additional settings</h3>
+            <label for="version">Minimum Engine Version</label>
+            <select class="version" oreui-type="general" oreui-color="dark" disabled>
+                <option value="1.21.40">1.21.40</option>
+                <option value="1.21.0">1.21</option>
+                <option value="1.20.0">1.20</option>
+                <option value="1.19.0">1.19</option>
+                <option value="1.18.0">1.18</option>
+                <option value="1.17.0">1.17</option>
+                <option value="1.16.0">1.16</option>
+            </select>
+            <label for="packName">Pack Name</label>
+            <input type="text" oreui-type="input" class="packName" disabled/>
+        </div>
+        <br>
         <button id="processButton" onclick="upload()" oreui-type="button" oreui-color="green" disabled>Process ZIP</button>
         <br>
     </div>
@@ -37,8 +44,6 @@
         <h3 class="loghead">Log</h3>
         <pre class="log" oreui-type="general" oreui-color="dark"></pre>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
-    <script src="https://nspc911.github.io/OreUI-HTML/src/oreui.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
