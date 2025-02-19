@@ -4,6 +4,9 @@
     "World of Color / Colorful Slime": "World of Color / Slimes"
   },
   "categories": {
+    "terrain": {
+      "Lush Grass (Mostly) All 'Round!": "lush_grass_all_round"
+    },
     "gui/hearts": {
       "White": "white_hearts",
       "Light Gray": "light_gray_hearts",
