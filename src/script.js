@@ -238,7 +238,7 @@ function upload() {
                   .then(function (updatedBlob) {
                     const downloadLink = document.createElement("a");
                     downloadLink.href = URL.createObjectURL(updatedBlob);
-                    downloadLink.download = `${request.name}.zip`;
+                    downloadLink.download = `${request.name}.mcpack`;
                     document.body.appendChild(downloadLink);
                     downloadLink.click();
                     document.body.removeChild(downloadLink);
