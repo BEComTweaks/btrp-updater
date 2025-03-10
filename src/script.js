@@ -1,6 +1,6 @@
 var indexed = {};
 var request = { name: "<name>", categories: [] };
-const bturl = "https://dev.bedrocktweaks.net/api/resource-packs";
+const bturl = "https://bedrocktweaks.net/api/resource-packs";
 const zipInput = document.getElementById("zipFileInput");
 var flattened;
 
