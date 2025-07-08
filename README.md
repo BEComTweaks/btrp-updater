@@ -4,6 +4,7 @@
 
 ![Commit Activity](https://img.shields.io/github/commit-activity/w/BEComTweaks/BTRP-Updater?style=for-the-badge&label=Commits&color=purple)
 ![GitHub repo size](https://img.shields.io/github/repo-size/BEComTweaks/BTRP-Updater?style=for-the-badge&label=Size&color=pink)
+
 </div>
 
 <div align="left">

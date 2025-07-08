@@ -4,14 +4,23 @@ const bturl = "https://bedrocktweaks.net/api/resource-packs";
 const zipInput = document.getElementById("zipFileInput");
 var flattened;
 
-function logger(msg) {
-  console.log(msg);
-  const log = document.querySelector("pre.log");
-  var label = document.createElement("div");
-  label.textContent = msg;
-  log.appendChild(label);
+function consoler(logMessage) {
+  const err = new Error();
+  const stack = err.stack.split("\n");
+  let functionCall;
+  if (stack[1].includes("consoler")) {
+    functionCall = stack[2];
+  } else {
+    functionCall = stack[1];
+  }
+  console.log(`${functionCall}\n${logMessage}`);
+  const consoleElement = document.querySelector("pre.log");
+  const log = document.createElement("div");
+  log.textContent = logMessage;
+  consoleElement.appendChild(log);
 }
-logger("Sent GET request");
+
+consoler("Sent GET request");
 function fetchAndIndex() {
   return fetch(bturl, {
     method: "GET",
@@ -24,8 +33,8 @@ function fetchAndIndex() {
       return response.json();
     })
     .then((data) => {
-      logger("Received JSON");
-      logger("Indexing...");
+      consoler("Received JSON");
+      consoler("Indexing...");
       delete data.combinations;
       delete data.deepMergeFiles;
       data.categories.forEach((category) => {
@@ -34,12 +43,12 @@ function fetchAndIndex() {
           indexed[pack.name] = pack.id;
         });
       });
-      logger("Indexing complete!");
+      consoler("Indexing complete!");
       OreUI.becomeEnabled(document.querySelector(".fileInput"));
       OreUI.becomeEnabled(zipInput);
     })
     .catch((error) => {
-      logger("Error fetching the JSON:", error);
+      consoler("Error fetching the JSON:", error);
     });
 }
 
@@ -54,7 +63,7 @@ function fetchFlatten() {
     })
     .then((data) => {
       flattened = data;
-      logger("Received flattened JSON");
+      consoler("Received flattened JSON");
     });
 }
 
@@ -68,8 +77,8 @@ zipInput.addEventListener("change", function (event) {
   request = { name: "<name>", categories: [] };
   const file = event.target.files[0];
   if (file) {
-    logger("File selected");
-    logger("Processing file...");
+    consoler("File selected");
+    consoler("Processing file...");
     const reader = new FileReader();
     reader.onload = function (e) {
       JSZip.loadAsync(e.target.result).then(function (zip) {
@@ -96,12 +105,17 @@ zipInput.addEventListener("change", function (event) {
                       if (e.startsWith(" ")) {
                         // pack
                         e = e.trim();
+                        if (!currentCategory) {
+                          fuckedUpCombinations = true;
+                          return;
+                        }
                         if (indexed[e] === undefined) {
                           if (
+                            !flattened["categories"][currentCategory.id] ||
                             flattened["categories"][currentCategory.id][e] ===
-                            undefined
+                              undefined
                           ) {
-                            logger(`${e} isn't a valid pack`);
+                            consoler(`${e} isn't a valid pack`);
                             invalid = true;
                           } else {
                             currentCategory.packs.push(
@@ -113,39 +127,39 @@ zipInput.addEventListener("change", function (event) {
                         }
                       } else {
                         // category
-                        if (currentCategory !== null) {
-                          if (indexed[e] === undefined) {
-                            if (flattened["category"][e] === undefined) {
-                              fuckedUpCombinations = true;
-                            } else {
-                              request.categories.push(currentCategory);
-                              currentCategory = {
-                                id: flattened["category"][e],
-                                packs: [],
-                              };
-                            }
-                          }
-                          if (currentCategory.packs.length > 0) {
-                            request.categories.push(currentCategory);
-                          }
+                        if (
+                          currentCategory &&
+                          currentCategory.packs.length > 0
+                        ) {
+                          request.categories.push(currentCategory);
                         }
-                        currentCategory = {
-                          id: indexed[e],
-                          packs: [],
-                        };
+
+                        const catId =
+                          indexed[e] ||
+                          (flattened.category && flattened.category[e]);
+
+                        if (catId !== undefined) {
+                          currentCategory = { id: catId, packs: [] };
+                        } else {
+                          fuckedUpCombinations = true;
+                          currentCategory = null;
+                        }
                       }
                     }
                   });
+                  if (currentCategory && currentCategory.packs.length > 0) {
+                    request.categories.push(currentCategory);
+                  }
                   if (invalid) {
-                    logger("Some packs have been removed because");
-                    logger("DrAV doesnt want deprecated features");
+                    consoler("Some packs have been removed because");
+                    consoler("DrAV doesnt want deprecated features");
                   }
                   resolve();
                 });
               }
             });
           } catch (e) {
-            logger("Error processing file", e);
+            consoler("Error processing file", e);
             noissue = false;
             reject(e);
           }
@@ -162,14 +176,14 @@ zipInput.addEventListener("change", function (event) {
                     document.querySelector(".packName").value = mf.header.name;
                     resolve();
                   } catch (e) {
-                    logger("Error parsing manifest.json", e);
+                    consoler("Error parsing manifest.json", e);
                     reject(e);
                   }
                 });
               }
             });
           } catch (e) {
-            logger("Error processing file", e);
+            consoler("Error processing file", e);
             noissue = false;
             reject(e);
           }
@@ -178,17 +192,19 @@ zipInput.addEventListener("change", function (event) {
         Promise.all([processPacksInfo, processManifestJson])
           .then(() => {
             if (filesFound[0] && filesFound[1] && noissue) {
-              logger("Processed file");
+              consoler("Processed file");
+              console.log(request);
               document.querySelector(".fileInput div").innerText = file.name;
+              request.name = file.name;
               OreUI.becomeEnabled(document.querySelector(".version"));
               OreUI.becomeEnabled(document.getElementById("processButton"));
               OreUI.becomeEnabled(document.querySelector(".packName"));
             } else {
-              logger("Upload a proper pack.");
+              consoler("Upload a proper pack.");
             }
           })
           .catch((e) => {
-            logger("Error processing file", e);
+            consoler("Error processing file", e);
           });
       });
     };
@@ -198,10 +214,11 @@ zipInput.addEventListener("change", function (event) {
 
 var processbutton = document.getElementById("processButton");
 function upload() {
+  request.name = document.querySelector(".packName").value;
   /* I fucking hate mobile */
   console.log(request);
   processbutton.disabled = true;
-  logger("Sent POST request");
+  consoler("Sent POST request");
   fetch(bturl, {
     method: "POST",
     headers: {
@@ -218,7 +235,7 @@ function upload() {
       return response.blob();
     })
     .then(async (blob) => {
-      logger("Received pack");
+      consoler("Received pack");
       const reader = new FileReader();
       reader.onload = function (e) {
         JSZip.loadAsync(e.target.result).then(function (zip) {
@@ -232,7 +249,7 @@ function upload() {
                   .map((e) => parseInt(e));
                 mf.header.min_engine_version = ver;
                 zip.file("manifest.json", JSON.stringify(mf, null, 2));
-                logger("Replaced version");
+                consoler("Replaced version");
                 zip
                   .generateAsync({ type: "blob" })
                   .then(function (updatedBlob) {
@@ -242,7 +259,7 @@ function upload() {
                     document.body.appendChild(downloadLink);
                     downloadLink.click();
                     document.body.removeChild(downloadLink);
-                    logger("Download pack!");
+                    consoler("Download pack!");
                     processbutton.disabled = false;
                   });
               });
@@ -253,7 +270,7 @@ function upload() {
       reader.readAsArrayBuffer(blob);
     })
     .catch((error) => {
-      logger("Error:", response.status);
+      consoler("Error:", response.status);
       processbutton.disabled = false;
     });
 }
