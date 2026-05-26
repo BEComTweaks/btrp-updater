@@ -232,9 +232,22 @@ function upload() {
         processbutton.disabled = false;
         throw new Error(`Status: ${response.status}`);
       }
-      return response.blob();
+      return response.json();
     })
-    .then(async (blob) => {
+    .then((data) => {
+      if (!data || !data.downloadUrl) {
+        throw new Error("Missing downloadUrl from API response");
+      }
+      return fetch(data.downloadUrl)
+        .then((downloadResponse) => {
+          if (!downloadResponse.ok) {
+            throw new Error(`Status: ${downloadResponse.status}`);
+          }
+          return downloadResponse.blob();
+        })
+        .then((blob) => ({ blob, packName: data.packName }));
+    })
+    .then(({ blob, packName }) => {
       consoler("Received pack");
       const reader = new FileReader();
       reader.onload = function (e) {
@@ -255,7 +268,7 @@ function upload() {
                   .then(function (updatedBlob) {
                     const downloadLink = document.createElement("a");
                     downloadLink.href = URL.createObjectURL(updatedBlob);
-                    downloadLink.download = `${request.name}.mcpack`;
+                    downloadLink.download = `${packName || request.name}.mcpack`;
                     document.body.appendChild(downloadLink);
                     downloadLink.click();
                     document.body.removeChild(downloadLink);
@@ -270,7 +283,7 @@ function upload() {
       reader.readAsArrayBuffer(blob);
     })
     .catch((error) => {
-      consoler("Error:", response.status);
+      consoler("Error:", error);
       processbutton.disabled = false;
     });
 }
