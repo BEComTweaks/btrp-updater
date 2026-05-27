@@ -173,6 +173,14 @@ zipInput.addEventListener("change", function (event) {
                 zipEntry.async("string").then(function (content) {
                   try {
                     const mf = JSON.parse(content);
+                    // check for empty name because old version allowed it
+                    // obviously we are susceptible to injections, but the most they are
+                    // going to inject is their own browser, so im not the most concerned
+                    if (mf.header.name.length === 0) {
+                      // set to zip name without extension
+                      consoler("No name available, using filename")
+                      mf.header.name = file.name.replace(/\.[^/.]+$/, "");
+                    }
                     document.querySelector(".packName").value = mf.header.name;
                     resolve();
                   } catch (e) {
